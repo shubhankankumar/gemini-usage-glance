@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Gemini Usage Glance",
+  "version": "7.0",
+  "description": "Instant Gemini usage tracker",
+  "permissions": ["scripting"],
+  "host_permissions": ["https://gemini.google.com/*"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

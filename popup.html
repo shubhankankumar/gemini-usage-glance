@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Gemini Usage</title>
+  <style>
+    :root {
+      --bg: #0b0b12;
+      --surface: rgba(255,255,255,0.035);
+      --surface-hover: rgba(255,255,255,0.055);
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(255,255,255,0.12);
+      --text: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #475569;
+      --blue: #6366f1;
+      --blue-bg: rgba(99,102,241,0.12);
+      --blue-glow: rgba(99,102,241,0.25);
+      --green: #10b981;
+      --green-glow: rgba(16,185,129,0.25);
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --radius: 8px;
+      --radius-sm: 5px;
+      --font: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { font-size: 13px; }
+
+    body {
+      width: 300px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-weight: 450;
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -80px;
+      right: -80px;
+      width: 160px;
+      height: 160px;
+      background: radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .container { padding: 14px 14px 12px; }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .logo {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #818cf8, #6366f1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 1px 8px rgba(99,102,241,0.3);
+    }
+
+    .header-info { flex: 1; min-width: 0; }
+
+    .header-info h1 {
+      font-size: 13px;
+      font-weight: 650;
+      letter-spacing: -0.15px;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .header-info .sub {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .card:last-of-type { margin-bottom: 10px; }
+
+    .card:hover {
+      border-color: var(--border-hover);
+      background: var(--surface-hover);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 550;
+      color: var(--text-secondary);
+      letter-spacing: 0.15px;
+    }
+
+    .card-value {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      font-variant-numeric: tabular-nums;
+      transition: transform 0.25s ease;
+    }
+
+    .card-value.blue { color: var(--blue); }
+    .card-value.green { color: var(--green); }
+
+    .card-value.pulse {
+      animation: pulse 0.35s ease;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .bar {
+      height: 3px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      width: 0%;
+      transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .bar-fill.blue {
+      background: linear-gradient(90deg, #818cf8, #6366f1);
+      box-shadow: 0 0 6px var(--blue-glow);
+    }
+
+    .bar-fill.green {
+      background: linear-gradient(90deg, #34d399, #10b981);
+      box-shadow: 0 0 6px var(--green-glow);
+    }
+
+    #status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 500;
+      margin-bottom: 10px;
+      min-height: 16px;
+      transition: color 0.25s;
+    }
+
+    #status .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: background 0.25s, box-shadow 0.25s;
+    }
+
+    #status.loading { color: var(--amber); }
+    #status.loading .dot { background: var(--amber); box-shadow: 0 0 5px rgba(245,158,11,0.4); animation: blink 0.9s infinite; }
+
+    #status.success { color: var(--green); }
+    #status.success .dot { background: var(--green); box-shadow: 0 0 5px rgba(16,185,129,0.35); }
+
+    #status.error { color: var(--red); }
+    #status.error .dot { background: var(--red); box-shadow: 0 0 5px rgba(239,68,68,0.35); }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.25; }
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn {
+      flex: 1;
+      height: 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font);
+      font-size: 11px;
+      font-weight: 550;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 0.1px;
+    }
+
+    .btn-primary {
+      background: var(--blue-bg);
+      color: #a5b4fc;
+      border-color: rgba(99,102,241,0.2);
+    }
+
+    .btn-primary:hover {
+      background: rgba(99,102,241,0.2);
+      border-color: rgba(99,102,241,0.35);
+      transform: translateY(-0.5px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      background: rgba(99,102,241,0.25);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-muted);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface);
+      border-color: var(--border-hover);
+      color: var(--text-secondary);
+      transform: translateY(-0.5px);
+    }
+
+    .btn-secondary:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo" aria-hidden="true">G</div>
+      <div class="header-info">
+        <h1>Gemini Usage</h1>
+        <div class="sub">Real-time tracker</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-label">5-Hour Usage</span>
+        <span id="current" class="card-value blue">--</span>
+      </div>
+      <div class="bar">
+        <div id="progress-current" class="bar-fill blue"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-label">Weekly Usage</span>
+        <span id="weekly" class="card-value green">--</span>
+      </div>
+      <div class="bar">
+        <div id="progress-weekly" class="bar-fill green"></div>
+      </div>
+    </div>
+
+    <div id="status" class="loading" role="status" aria-live="polite">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="status-text">Loading...</span>
+    </div>
+
+    <div class="actions">
+      <button id="refresh" class="btn btn-primary">Refresh</button>
+      <button id="open" class="btn btn-secondary">Dashboard</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
