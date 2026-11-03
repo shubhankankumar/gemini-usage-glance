@@ -31,6 +31,8 @@ function waitForLoad(tabId, ms) {
       err ? reject(err) : resolve();
     }
     chrome.tabs.onUpdated.addListener(onUpdated);
+    // the tab may have finished loading before the listener was attached
+    chrome.tabs.get(tabId).then((t) => t.status === "complete" && done(), () => {});
   });
 }
 
